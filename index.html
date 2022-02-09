@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="grid-container" id="grid-container"></div>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script>
+    function hex(c) {
+      var s = "0123456789abcdef";
+      var i = parseInt(c);
+      if (i == 0 || isNaN(c)) return "00";
+      i = Math.round(Math.min(Math.max(0, i), 255));
+      return s.charAt((i - (i % 16)) / 16) + s.charAt(i % 16);
+    }
+
+    /* Convert an RGB triplet to a hex string */
+    function convertToHex(rgb) {
+      return hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
+    }
+
+    /* Remove '#' in color hex string */
+    function trim(s) {
+      return s.charAt(0) == "#" ? s.substring(1, 7) : s;
+    }
+
+    /* Convert a hex string to an RGB triplet */
+    function convertToRGB(hex) {
+      var color = [];
+      color[0] = parseInt(trim(hex).substring(0, 2), 16);
+      color[1] = parseInt(trim(hex).substring(2, 4), 16);
+      color[2] = parseInt(trim(hex).substring(4, 6), 16);
+      return color;
+    }
+
+    function generateColor(colorStart, colorEnd, colorCount) {
+      // The beginning of your gradient
+      var start = convertToRGB(colorStart);
+
+      // The end of your gradient
+      var end = convertToRGB(colorEnd);
+
+      // The number of colors to compute
+      var len = colorCount;
+
+      //Alpha blending amount
+      var alpha = 0.1;
+
+      var array = [];
+
+      for (i = 0; i < len; i++) {
+        var c = [];
+        alpha += 1.0 / len;
+
+        c[0] = start[0] * alpha + (1 - alpha) * end[0];
+        c[1] = start[1] * alpha + (1 - alpha) * end[1];
+        c[2] = start[2] * alpha + (1 - alpha) * end[2];
+
+        array.push(convertToHex(c));
+      }
+
+      return array;
+    }
+
+    // Exemplo de como usar
+
+    var tmp = generateColor("#000000", "#88c714", 576);
+
+    var i = 0;
+    while (i < 577) {
+      var div = document.createElement("div");
+      div.setAttribute("id", `grid-item-${i}`);
+      div.classList.add("box");
+      div.style.backgroundImage = `linear-gradient(45deg, white, #${tmp[i]}), linear-gradient(45deg, black, #${tmp[i]})`;
+      div.style.backgroundSize = "100% 100%, 2000% 100%";
+      div.style.animation = "move 5s infinite";
+      div.style.animationDirection = "alternate";
+      document.getElementById("grid-container").append(div);
+      i++;
+    }
+    console.log(gsap);
+    gsap.from(".box", {
+      duration: 2,
+      x: 20,
+      y: "random(50, 10)",
+      stagger: 0.008,
+      borderRadius: "100%",
+      ease: "elastic",
+      rotation: 20,
+      // background: "linear-gradient(#e66465, #9198e5)",
+    });
+  </script>
+</html>
